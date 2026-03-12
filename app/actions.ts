@@ -2,16 +2,18 @@
 
 import { redirect } from "next/navigation";
 import { nanoid } from "nanoid";
-import { saveInvoice } from "@/lib/invoice-storage";
+import { saveInvoice, getNextInvoiceNumber } from "@/lib/invoice-storage";
 import { createPaymentLink } from "@/lib/mayar";
 import { Invoice, InvoiceItem } from "@/lib/types";
 
 export async function createInvoice(formData: FormData) {
+  const invoiceNumber = getNextInvoiceNumber();
   const freelancerName = formData.get("freelancerName") as string;
   const clientName = formData.get("clientName") as string;
   const clientEmail = formData.get("clientEmail") as string;
   const clientPhone = formData.get("clientPhone") as string;
   const projectDescription = formData.get("projectDescription") as string;
+  const notes = formData.get("notes") as string;
   const dueDate = formData.get("dueDate") as string;
 
   // Parse line items — submitted as itemName_0, itemQty_0, itemPrice_0, etc.
@@ -45,11 +47,13 @@ export async function createInvoice(formData: FormData) {
   const id = nanoid(10);
   const invoice: Invoice = {
     id,
+    invoiceNumber,
     freelancerName,
     clientName,
     clientEmail,
     clientPhone,
     projectDescription,
+    notes,
     dueDate,
     items,
     total,

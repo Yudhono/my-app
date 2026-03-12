@@ -40,7 +40,9 @@ export default async function InvoicePage({ params }: Readonly<{ params: Promise
               <h1 className="text-2xl font-bold text-gray-900">
                 {invoice.freelancerName || "FreelanceKit"}
               </h1>
-              <p className="text-gray-400 text-sm mt-1">Invoice #{invoice.id}</p>
+              <p className="text-gray-400 text-sm mt-1">
+                {invoice.invoiceNumber ? `INV-${String(invoice.invoiceNumber).padStart(3, "0")}` : `#${invoice.id}`}
+              </p>
             </div>
             <div className="text-right">
               <span className="inline-block rounded-full bg-amber-100 text-amber-700 text-xs font-semibold px-3 py-1">
@@ -69,6 +71,13 @@ export default async function InvoicePage({ params }: Readonly<{ params: Promise
             <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">Deskripsi Proyek</p>
             <p className="text-gray-700 text-sm">{invoice.projectDescription}</p>
           </div>
+
+          {invoice.notes && (
+            <div className="mb-8 rounded-xl bg-gray-50 border border-gray-100 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">Catatan</p>
+              <p className="text-gray-700 text-sm whitespace-pre-line">{invoice.notes}</p>
+            </div>
+          )}
 
           {/* Line Items Table */}
           <table className="w-full text-sm mb-6">
@@ -128,9 +137,12 @@ export default async function InvoicePage({ params }: Readonly<{ params: Promise
         </div>
 
         {/* Footer */}
-        <div className="mt-4 text-center print:hidden">
+        <div className="mt-4 flex justify-center gap-6 print:hidden">
           <Link href="/" className="text-sm text-gray-400 hover:text-gray-600">
             ← Buat Invoice Baru
+          </Link>
+          <Link href="/invoices" className="text-sm text-gray-400 hover:text-gray-600">
+            Semua Invoice →
           </Link>
         </div>
       </div>

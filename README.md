@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FreelanceKit
 
-## Getting Started
+> Invoice profesional untuk freelancer Indonesia. Buat invoice, terima pembayaran via Mayar, kirim ke klien lewat WhatsApp — selesai dalam 60 detik.
 
-First, run the development server:
+Dibuat untuk **Mayar Vibecoding Competition 2026**.
+
+---
+
+## Fitur
+
+- **Buat Invoice** — form lengkap dengan info klien, item layanan, dan catatan pembayaran
+- **Link Pembayaran Mayar** — otomatis generate payment link via Mayar Headless API
+- **Kirim via WhatsApp** — satu klik, pesan siap kirim dengan detail invoice & link bayar
+- **QR Code Scan-to-Pay** — QR langsung di halaman invoice
+- **Nomor Invoice Berurutan** — INV-001, INV-002, dst.
+- **Cetak / Simpan PDF** — print-friendly invoice layout
+- **Salin Link Invoice** — bagikan URL invoice ke klien
+- **Dashboard Invoice** — lihat semua invoice yang pernah dibuat
+
+---
+
+## Tech Stack
+
+- [Next.js 15](https://nextjs.org) — App Router + Server Actions
+- [Tailwind CSS v4](https://tailwindcss.com)
+- [Mayar Headless API](https://docs.mayar.id) — payment link generation
+- [react-qr-code](https://github.com/rosskhanas/react-qr-code) — QR code rendering
+- [nanoid](https://github.com/ai/nanoid) — invoice ID generation
+- File system storage — invoice data disimpan sebagai JSON lokal
+
+---
+
+## Cara Menjalankan
+
+### 1. Clone & install
+
+```bash
+git clone <repo-url>
+cd my-app
+npm install
+```
+
+### 2. Setup environment variable
+
+```bash
+cp .env.example .env.local
+```
+
+Buka `.env.local` dan isi dengan Mayar API key kamu:
+
+```env
+MAYAR_API_KEY=your_mayar_api_key_here
+```
+
+Untuk sandbox, gunakan API key dari [Mayar Sandbox](https://api.mayar.club).
+
+### 3. Jalankan
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Struktur Halaman
 
-## Learn More
+| Route | Deskripsi |
+|---|---|
+| `/` | Landing page + form buat invoice |
+| `/invoices` | Dashboard semua invoice |
+| `/invoice/[id]` | Detail invoice + tombol bayar & kirim |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Cara Pakai
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Buka `/` lalu isi form invoice (info kamu, info klien, item, catatan)
+2. Klik **Buat Invoice & Link Pembayaran**
+3. Halaman invoice terbuka dengan link Mayar otomatis terpasang
+4. Klik **Kirim via WhatsApp** — pesan profesional langsung siap dikirim ke klien
+5. Klien membuka link dan bayar via Mayar
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Integrasi Mayar
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+FreelanceKit menggunakan **Mayar Headless API** untuk membuat invoice dan payment link secara otomatis saat freelancer submit form. Payment link yang dihasilkan langsung disematkan di halaman invoice dan pesan WhatsApp.
+
+Endpoint: `POST /hl/v1/invoice/create`
+
+---
+
+## Lisensi
+
+MIT
