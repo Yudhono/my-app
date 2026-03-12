@@ -1,0 +1,20 @@
+schema: spec-driven
+
+context: |
+  Tech stack: TypeScript, Next.js 15 (App Router), Tailwind CSS, React
+  Package manager: npm
+  Domain: Freelance invoicing and payment tool for Indonesian freelancers
+  Payment integration: Mayar API (Indonesian payment gateway) for generating payment links
+  No external AI API usage — all logic is template-based
+  Solo developer, competition submission (Mayar Vibecoding Competition 2026)
+  Keep code clean, minimal dependencies, no unnecessary complexity
+  Use conventional commits
+
+rules:
+  proposal:
+    - Keep proposals concise and focused on MVP scope
+    - Always include a Non-goals section to prevent scope creep
+  tasks:
+    - Break tasks into small, implementable chunks
+    - Each task should be completable in under 1 hour
+    - Always specify file paths for each task

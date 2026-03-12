@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# claude code internal tooling
+.claude/
+
+# invoice data (user-submitted, keep private)
+data/invoices/*.json
