@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
 import { getInvoice } from "@/lib/invoice-storage";
+import InvoiceActions from "./InvoiceActions";
+import Link from "next/link";
 
 type Params = { id: string };
 
-export default async function InvoicePage({ params }: { params: Promise<Params> }) {
+export default async function InvoicePage({ params }: Readonly<{ params: Promise<Params> }>) {
   const { id } = await params;
   const invoice = getInvoice(id);
   if (!invoice) notFound();
@@ -17,38 +19,21 @@ export default async function InvoicePage({ params }: { params: Promise<Params> 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4 print:bg-white print:py-0">
       <div className="mx-auto max-w-2xl">
-        {/* Pay Now Banner */}
-        {invoice.mayarPaymentUrl ? (
-          <div className="mb-6 rounded-2xl bg-indigo-600 p-4 flex items-center justify-between print:hidden">
-            <div>
-              <p className="text-white font-semibold">Invoice siap dibayar</p>
-              <p className="text-indigo-200 text-sm">Bagikan link ini ke klien kamu</p>
-            </div>
-            <a
-              href={invoice.mayarPaymentUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-xl bg-white px-5 py-2 text-sm font-semibold text-indigo-600 hover:bg-indigo-50 transition-colors"
-            >
-              Bayar Sekarang
-            </a>
-          </div>
-        ) : (
-          <div className="mb-6 rounded-2xl bg-yellow-50 border border-yellow-200 p-4 print:hidden">
-            <p className="text-yellow-800 text-sm">Link pembayaran tidak tersedia. Silakan hubungi freelancer.</p>
-          </div>
-        )}
+        {/* Action Bar */}
+        <InvoiceActions invoiceId={id} mayarPaymentUrl={invoice.mayarPaymentUrl} />
 
         {/* Invoice Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 print:shadow-none print:border-none print:rounded-none">
           {/* Header */}
           <div className="flex items-start justify-between mb-8">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">FreelanceKit</h1>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {invoice.freelancerName || "FreelanceKit"}
+              </h1>
               <p className="text-gray-400 text-sm mt-1">Invoice #{invoice.id}</p>
             </div>
             <div className="text-right">
-              <span className="inline-block rounded-full bg-green-100 text-green-700 text-xs font-semibold px-3 py-1">
+              <span className="inline-block rounded-full bg-amber-100 text-amber-700 text-xs font-semibold px-3 py-1">
                 Menunggu Pembayaran
               </span>
               <p className="text-xs text-gray-400 mt-2">
@@ -57,7 +42,7 @@ export default async function InvoicePage({ params }: { params: Promise<Params> 
             </div>
           </div>
 
-          {/* Client + Project */}
+          {/* Client + Due Date */}
           <div className="grid grid-cols-2 gap-6 mb-8">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">Tagihan Untuk</p>
@@ -87,7 +72,7 @@ export default async function InvoicePage({ params }: { params: Promise<Params> 
             </thead>
             <tbody>
               {invoice.items.map((item, index) => (
-                <tr key={index} className="border-b border-gray-50">
+                <tr key={`${item.name}-${index}`} className="border-b border-gray-50">
                   <td className="py-3 text-gray-900">{item.name}</td>
                   <td className="py-3 text-right text-gray-600">{item.quantity}</td>
                   <td className="py-3 text-right text-gray-600">{formatRupiah(item.unitPrice)}</td>
@@ -100,28 +85,43 @@ export default async function InvoicePage({ params }: { params: Promise<Params> 
           </table>
 
           {/* Total */}
-          <div className="flex justify-end">
+          <div className="flex justify-end mb-8">
             <div className="w-56">
-              <div className="flex justify-between py-2 border-t-2 border-gray-900">
+              <div className="flex justify-between py-3 border-t-2 border-gray-900">
                 <span className="font-bold text-gray-900">Total</span>
                 <span className="font-bold text-gray-900">{formatRupiah(invoice.total)}</span>
               </div>
             </div>
           </div>
 
-          {/* Pay Button (print-visible version) */}
+          {/* QR Code + Pay section */}
           {invoice.mayarPaymentUrl && (
-            <div className="mt-8 print:block hidden">
-              <p className="text-sm text-gray-500">Link Pembayaran: {invoice.mayarPaymentUrl}</p>
+            <div className="border-t border-gray-100 pt-6 flex flex-col sm:flex-row items-center gap-6">
+              <div className="flex flex-col items-center gap-2 shrink-0">
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Scan untuk Bayar</p>
+                <InvoiceActions qrOnly paymentUrl={invoice.mayarPaymentUrl} invoiceId={id} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-gray-500 mb-1">Link Pembayaran</p>
+                <p className="text-xs text-indigo-600 break-all">{invoice.mayarPaymentUrl}</p>
+                <a
+                  href={invoice.mayarPaymentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 inline-block rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors print:hidden"
+                >
+                  Bayar Sekarang →
+                </a>
+              </div>
             </div>
           )}
         </div>
 
-        {/* Back link */}
+        {/* Footer */}
         <div className="mt-4 text-center print:hidden">
-          <a href="/" className="text-sm text-gray-400 hover:text-gray-600">
+          <Link href="/" className="text-sm text-gray-400 hover:text-gray-600">
             ← Buat Invoice Baru
-          </a>
+          </Link>
         </div>
       </div>
     </div>

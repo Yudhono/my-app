@@ -7,6 +7,7 @@ import { createPaymentLink } from "@/lib/mayar";
 import { Invoice, InvoiceItem } from "@/lib/types";
 
 export async function createInvoice(formData: FormData) {
+  const freelancerName = formData.get("freelancerName") as string;
   const clientName = formData.get("clientName") as string;
   const clientEmail = formData.get("clientEmail") as string;
   const clientPhone = formData.get("clientPhone") as string;
@@ -44,6 +45,7 @@ export async function createInvoice(formData: FormData) {
   const id = nanoid(10);
   const invoice: Invoice = {
     id,
+    freelancerName,
     clientName,
     clientEmail,
     clientPhone,

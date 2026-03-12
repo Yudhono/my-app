@@ -6,6 +6,7 @@ export type InvoiceItem = {
 
 export type Invoice = {
   id: string;
+  freelancerName: string;
   clientName: string;
   clientEmail: string;
   clientPhone: string;
