@@ -20,7 +20,17 @@ export default async function InvoicePage({ params }: Readonly<{ params: Promise
     <div className="min-h-screen bg-gray-50 py-10 px-4 print:bg-white print:py-0">
       <div className="mx-auto max-w-2xl">
         {/* Action Bar */}
-        <InvoiceActions invoiceId={id} mayarPaymentUrl={invoice.mayarPaymentUrl} />
+        <InvoiceActions
+          invoiceId={id}
+          invoice={{
+            id: invoice.id,
+            clientName: invoice.clientName,
+            projectDescription: invoice.projectDescription,
+            total: invoice.total,
+            dueDate: invoice.dueDate,
+            mayarPaymentUrl: invoice.mayarPaymentUrl,
+          }}
+        />
 
         {/* Invoice Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 print:shadow-none print:border-none print:rounded-none">
