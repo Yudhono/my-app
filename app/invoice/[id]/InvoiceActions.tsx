@@ -35,13 +35,10 @@ export default function InvoiceActions(props: Props) {
   }
 
   const { invoice, invoiceId } = props;
-  const invoiceUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/invoice/${invoiceId}`
-    : `https://freelancekit.app/invoice/${invoiceId}`;
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(invoiceUrl);
+      await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {

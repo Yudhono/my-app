@@ -1,20 +1,24 @@
 import { notFound } from "next/navigation";
-import { cookies } from "next/headers";
 import { getInvoice } from "@/lib/invoice-storage";
 import { Invoice } from "@/lib/types";
 import InvoiceActions from "./InvoiceActions";
+import InvoiceSaver from "./InvoiceSaver";
 import Link from "next/link";
 
 type Params = { id: string };
 
-export default async function InvoicePage({ params }: Readonly<{ params: Promise<Params> }>) {
+export default async function InvoicePage({
+  params,
+  searchParams,
+}: Readonly<{ params: Promise<Params>; searchParams: Promise<Record<string, string>> }>) {
   const { id } = await params;
-  const cookieStore = await cookies();
-  const cookieData = cookieStore.get(`inv_${id}`);
+  const { d } = await searchParams;
 
-  let invoice = cookieData
-    ? (() => { try { return JSON.parse(cookieData.value) as Invoice; } catch { return null; } })()
-    : getInvoice(id);
+  let invoice: Invoice | null = null;
+  if (d) {
+    try { invoice = JSON.parse(Buffer.from(d, "base64url").toString("utf-8")) as Invoice; } catch { /* fall through */ }
+  }
+  if (!invoice) invoice = getInvoice(id);
 
   if (!invoice) notFound();
 
@@ -26,6 +30,7 @@ export default async function InvoicePage({ params }: Readonly<{ params: Promise
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4 print:bg-white print:py-0">
+      <InvoiceSaver invoice={invoice} />
       <div className="mx-auto max-w-2xl">
         {/* Action Bar */}
         <InvoiceActions

@@ -1,5 +1,9 @@
-import { listInvoices } from "@/lib/invoice-storage";
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Invoice } from "@/lib/types";
+import { getInvoicesFromStorage, encodeInvoiceForUrl } from "@/app/invoice/[id]/InvoiceSaver";
 
 const formatRupiah = (amount: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(amount);
@@ -11,7 +15,11 @@ const formatInvNumber = (n: number | undefined) =>
   n ? `INV-${String(n).padStart(3, "0")}` : "—";
 
 export default function InvoicesPage() {
-  const invoices = listInvoices();
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+
+  useEffect(() => {
+    setInvoices(getInvoicesFromStorage());
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -94,7 +102,7 @@ export default function InvoicesPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <Link
-                        href={`/invoice/${invoice.id}`}
+                        href={`/invoice/${invoice.id}?d=${encodeInvoiceForUrl(invoice)}`}
                         className="text-indigo-600 hover:text-indigo-800 font-medium text-xs"
                       >
                         Lihat →
