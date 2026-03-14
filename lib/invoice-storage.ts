@@ -2,8 +2,8 @@ import fs from "fs";
 import path from "path";
 import { Invoice } from "./types";
 
-const INVOICES_DIR = path.join(process.cwd(), "data", "invoices");
-const COUNTER_FILE = path.join(process.cwd(), "data", "counter.json");
+const INVOICES_DIR = path.join("/tmp", "invoices");
+const COUNTER_FILE = path.join("/tmp", "counter.json");
 
 function ensureDir() {
   if (!fs.existsSync(INVOICES_DIR)) {
