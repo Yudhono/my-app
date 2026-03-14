@@ -5,9 +5,23 @@ import Link from "next/link";
 
 type Params = { id: string };
 
-export default async function InvoicePage({ params }: Readonly<{ params: Promise<Params> }>) {
+export default async function InvoicePage({
+  params,
+  searchParams,
+}: Readonly<{ params: Promise<Params>; searchParams: Promise<Record<string, string>> }>) {
   const { id } = await params;
-  const invoice = getInvoice(id);
+  const { d } = await searchParams;
+
+  let invoice = d
+    ? (() => {
+        try {
+          return JSON.parse(Buffer.from(decodeURIComponent(d), "base64").toString("utf-8"));
+        } catch {
+          return null;
+        }
+      })()
+    : getInvoice(id);
+
   if (!invoice) notFound();
 
   const formatRupiah = (amount: number) =>

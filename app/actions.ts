@@ -62,5 +62,5 @@ export async function createInvoice(formData: FormData) {
   };
 
   saveInvoice(invoice);
-  redirect(`/invoice/${id}`);
+  redirect(`/invoice/${id}?d=${encodeURIComponent(Buffer.from(JSON.stringify(invoice)).toString("base64"))}`);
 }
