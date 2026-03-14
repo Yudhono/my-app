@@ -1,25 +1,19 @@
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 import { getInvoice } from "@/lib/invoice-storage";
+import { Invoice } from "@/lib/types";
 import InvoiceActions from "./InvoiceActions";
 import Link from "next/link";
 
 type Params = { id: string };
 
-export default async function InvoicePage({
-  params,
-  searchParams,
-}: Readonly<{ params: Promise<Params>; searchParams: Promise<Record<string, string>> }>) {
+export default async function InvoicePage({ params }: Readonly<{ params: Promise<Params> }>) {
   const { id } = await params;
-  const { d } = await searchParams;
+  const cookieStore = await cookies();
+  const cookieData = cookieStore.get(`inv_${id}`);
 
-  let invoice = d
-    ? (() => {
-        try {
-          return JSON.parse(Buffer.from(decodeURIComponent(d), "base64").toString("utf-8"));
-        } catch {
-          return null;
-        }
-      })()
+  let invoice = cookieData
+    ? (() => { try { return JSON.parse(cookieData.value) as Invoice; } catch { return null; } })()
     : getInvoice(id);
 
   if (!invoice) notFound();

@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { nanoid } from "nanoid";
 import { saveInvoice, getNextInvoiceNumber } from "@/lib/invoice-storage";
 import { createPaymentLink } from "@/lib/mayar";
@@ -62,5 +63,7 @@ export async function createInvoice(formData: FormData) {
   };
 
   saveInvoice(invoice);
-  redirect(`/invoice/${id}?d=${encodeURIComponent(Buffer.from(JSON.stringify(invoice)).toString("base64"))}`);
+  const cookieStore = await cookies();
+  cookieStore.set(`inv_${id}`, JSON.stringify(invoice), { maxAge: 3600, path: "/" });
+  redirect(`/invoice/${id}`);
 }
