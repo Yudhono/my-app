@@ -55,7 +55,7 @@ The system SHALL prevent submission if required fields are missing or invalid.
 
 #### Scenario: Submission with valid data
 - **WHEN** all required fields are filled and the user submits
-- **THEN** the submit button shows "Membuat Invoice..." and is disabled, and the system creates the invoice and redirects to `/invoice/[id]`
+- **THEN** the submit button shows "Membuat Invoice..." and is disabled, and the system creates the invoice and redirects to `/invoice/[id]?d=<base64url_encoded_invoice>`
 
 ---
 
@@ -65,3 +65,7 @@ The system SHALL call the `createInvoice` Server Action on valid form submission
 #### Scenario: Server Action receives all form data
 - **WHEN** the form is submitted successfully
 - **THEN** the Server Action receives: freelancerName, clientName, clientEmail, clientPhone, projectDescription, notes, dueDate, and all itemName/itemQty/itemPrice fields
+
+#### Scenario: Redirect includes encoded invoice data
+- **WHEN** the Server Action completes successfully
+- **THEN** the redirect URL is `/invoice/[id]?d=<base64url>` where `d` contains the full invoice JSON encoded as base64url, ensuring the invoice page can render on any serverless instance

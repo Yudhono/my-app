@@ -1,27 +1,36 @@
 # Spec: Invoice View
 
 ## Purpose
-The invoice view page at `/invoice/[id]` is a shareable, public-facing page that displays the full invoice and provides all sharing and payment actions. It is designed for both the freelancer (to send/share) and the client (to review and pay).
+The invoice view page at `/invoice/[id]` is a shareable page that displays the full invoice and provides sharing and payment actions. Invoice data is retrieved primarily from the `?d=` URL query param (base64url encoded), with a filesystem fallback. Each page view also saves the invoice to browser localStorage via the `InvoiceSaver` component.
 
 ---
 
 ## Requirements
 
-### Requirement: Invoice is accessible via unique public URL
+### Requirement: Invoice is accessible via unique URL
 The system SHALL render a professional invoice page at `/invoice/[id]` without requiring login.
 
-#### Scenario: Valid invoice ID
-- **WHEN** a user visits `/invoice/[id]` with a valid ID
-- **THEN** the page renders the full invoice: freelancer name, invoice number (INV-001), client name, client email, project description, notes (if present), line items table with subtotals, grand total, due date, and a QR code + "Bayar Sekarang" button
+#### Scenario: Valid invoice URL with `?d=` param
+- **WHEN** a user visits `/invoice/[id]?d=<encoded>`
+- **THEN** the page decodes the base64url invoice data and renders the full invoice: freelancer name, invoice number (INV-001), client name, client email, project description, notes (if present), line items table with subtotals, grand total, due date, and (if `mayarPaymentUrl` is set) a QR code + "Bayar Sekarang" button
 
-#### Scenario: Invalid or missing invoice ID
-- **WHEN** a user visits `/invoice/[id]` with an ID that does not exist
+#### Scenario: Invalid or missing invoice data
+- **WHEN** neither the `?d=` param nor the filesystem has data for the given ID
 - **THEN** the system renders a 404 not found page
 
 ---
 
+### Requirement: Invoice data is saved to localStorage on view
+The system SHALL persist the invoice to browser localStorage when the page is viewed, enabling the `/invoices` dashboard to list it.
+
+#### Scenario: InvoiceSaver runs on page load
+- **WHEN** the invoice page renders in the browser
+- **THEN** the `InvoiceSaver` client component saves the invoice to localStorage under `fk_invoices`, deduping by ID and placing the latest first
+
+---
+
 ### Requirement: Invoice displays sequential invoice number
-The system SHALL show a human-readable invoice number instead of the raw ID.
+The system SHALL show a human-readable invoice number.
 
 #### Scenario: Invoice with a stored invoiceNumber
 - **WHEN** the invoice has an `invoiceNumber` field
@@ -42,7 +51,7 @@ The system SHALL display an action bar with all sharing and payment options.
 
 #### Scenario: Copy invoice link button
 - **WHEN** the user clicks "Salin Link Invoice"
-- **THEN** the current page URL (`/invoice/[id]`) is copied to clipboard and the button briefly shows "✓ Link Tersalin!"
+- **THEN** `window.location.href` (the full current URL including `?d=`) is copied to clipboard and the button briefly shows "✓ Link Tersalin!"
 
 #### Scenario: Print / PDF button
 - **WHEN** the user clicks "Cetak / PDF"

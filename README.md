@@ -26,7 +26,7 @@ Dibuat untuk **Mayar Vibecoding Competition 2026**.
 - [Mayar Headless API](https://docs.mayar.id) — payment link generation
 - [react-qr-code](https://github.com/rosskhanas/react-qr-code) — QR code rendering
 - [nanoid](https://github.com/ai/nanoid) — invoice ID generation
-- File system storage — invoice data disimpan sebagai JSON lokal
+- `/tmp` + `localStorage` — invoice data disimpan server-side dan di browser untuk kompatibilitas Vercel
 
 ---
 
